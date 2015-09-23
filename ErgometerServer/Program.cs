@@ -58,41 +58,51 @@ namespace ErgometerServer
                 stream.WriteLine(a.Substring(0, a.Length - 7) + "cs");
             }
             string b = reader.ReadLine();
-            if (b.StartsWith("2»"))
-            {
-                Console.WriteLine(b);
-                string[] package = b.Split('»');
-                name = package[2];
-                session = int.Parse(package[1]);
-                doctor = package[3].Equals("doctor");
-                if (doctor)
-                {
-                    //check password
-                }
-                else
-                {
-                    Console.WriteLine("login of " + name + " succesful");
-                    stream.WriteLine("2»" + package[1] + "»client»ls");
-                }
-            }
-            string c = reader.ReadLine();
-            ArrayList data = new ArrayList();
-            while (c.StartsWith("3»"))
-            {
-                Console.WriteLine(c);
-                data.Add(c);
-                stream.WriteLine("3»" + session + "»succes");
-                c = reader.ReadLine();
-            }
-            string d = reader.ReadLine();
             ArrayList oldData = new ArrayList();
-            while (c.StartsWith("4»"))
+            ArrayList data = new ArrayList();
+            while (!b.StartsWith("6»") && !b.EndsWith("logout"))
             {
-                Console.WriteLine(d);
-                oldData.Add(d);
-                stream.WriteLine("4»" + session + "»succes");
-                d = reader.ReadLine();
+                if (b.StartsWith("2»"))
+                {
+                    Console.WriteLine(b);
+                    string[] package = b.Split('»');
+                    name = package[2];
+                    session = int.Parse(package[1].Remove(0,3));
+                    doctor = package[3].Equals("doctor");
+                    if (doctor)
+                    {
+                        //check password
+                    }
+                    else
+                    {
+                        Console.WriteLine("login of " + name + " succesful");
+                        stream.WriteLine("2»ses" + package[1] + "»client»ls");
+                    }
+                }
+                if (b.StartsWith("3»"))
+                {
+                    Console.WriteLine(b);
+                    data.Add(b);
+                    stream.WriteLine("3»ses" + session + "»succes");
+                    b = reader.ReadLine();
+                }
+                if (b.StartsWith("4»") && b.EndsWith("»lastpackage"))
+                {
+                    Console.WriteLine(b);
+                    oldData.Add(b);
+                    stream.WriteLine("4»ses" + session + "»succes");
+                }
+                if (b.StartsWith("4»") && b.EndsWith("»lastpackage"))
+                {
+                    Console.WriteLine("last package received");
+                    stream.WriteLine("4»ses" + session + "»succes");
+                    stream.WriteLine();
+                }
+                // chat has still to be implemented
+                b = reader.ReadLine();
             }
+            Console.WriteLine("Closing session: ses" + session);
+            stream.WriteLine("6»" + session + "»logoutsucces");
             stream.Flush();
             stream.Close();
             reader.Close();
