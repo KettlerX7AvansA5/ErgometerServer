@@ -20,12 +20,12 @@ namespace ErgometerServer
 
         public Program()
         {
-            IPAddress localhost; //= IPAddress.Parse("127.0.0.1");
+            IPAddress ipAddress; //= IPAddress.Parse("127.0.0.1");
 
-            bool ipIsOk = IPAddress.TryParse("127.0.0.1", out localhost);
+            bool ipIsOk = IPAddress.TryParse(GetIp(), out ipAddress);
             if (!ipIsOk) { Console.WriteLine("ip adres kan niet geparsed worden."); Environment.Exit(1); }
 
-            TcpListener listener = new System.Net.Sockets.TcpListener(localhost, 80);
+            TcpListener listener = new System.Net.Sockets.TcpListener(ipAddress, 80);
             listener.Start();
 
             while (true)
@@ -42,6 +42,21 @@ namespace ErgometerServer
             }
         }
 
+        public static String GetIp()
+        {
+            IPHostEntry host;
+            string localIP = "?";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                }
+            }
+            return localIP;
+        }
+
         static void HandleClientThread(object obj)
         {
             TcpClient client = obj as TcpClient;
@@ -49,7 +64,7 @@ namespace ErgometerServer
             StreamWriter stream = new StreamWriter(client.GetStream(), Encoding.ASCII);
             string name = null;
             int session = 0;
-            bool doctor;
+            bool doctor = false;
             string a = reader.ReadLine();
             Console.WriteLine(a);
             if (a.StartsWith("1»") && a.EndsWith("connect"))
