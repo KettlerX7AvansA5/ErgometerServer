@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ErgometerLibrary;
 
 namespace ErgometerServer
 {
@@ -20,6 +21,7 @@ namespace ErgometerServer
 
         public Program()
         {
+            FileHandler.CheckDataFolder();
             IPAddress ipAddress; //= IPAddress.Parse("127.0.0.1");
 
             bool ipIsOk = IPAddress.TryParse(GetIp(), out ipAddress);
@@ -65,7 +67,7 @@ namespace ErgometerServer
             string name = null;
             int session = 0;
             bool doctor = false;
-            string a = reader.ReadLine();
+            string a = reader.ReadLine(); 
             Console.WriteLine(a);
             if (a.StartsWith("1»") && a.EndsWith("connect"))
             {
@@ -73,17 +75,21 @@ namespace ErgometerServer
                 stream.WriteLine(a.Substring(0, a.Length - 7) + "cs");
             }
             string b = reader.ReadLine();
-            ArrayList oldData = new ArrayList();
             ArrayList data = new ArrayList();
-            while (!b.StartsWith("6»") && !b.EndsWith("logout"))
+            while (!b.StartsWith("4»") && !b.EndsWith("logout"))
             {
-                if (b.StartsWith("2»"))
+                if (b.StartsWith("5»"))
                 {
+                    session = FileHandler.GenerateSession();
+                    NetCommand sescommand = new NetCommand(NetCommand.CommandType.SESSION, session);
+                    stream.WriteLine(sescommand.ToString());
                     Console.WriteLine(b);
-                    string[] package = b.Split('»');
-                    name = package[2];
-                    session = int.Parse(package[1].Remove(0,3));
-                    doctor = package[3].Equals("doctor");
+                }
+                if(b.StartsWith("1»"))
+                {
+                    NetCommand clientCommand = NetCommand.Parse(b);
+                    doctor = clientCommand.IsDoctor;
+                    name = clientCommand.DisplayName;
                     if (doctor)
                     {
                         //check password
@@ -91,33 +97,20 @@ namespace ErgometerServer
                     else
                     {
                         Console.WriteLine("login of " + name + " succesful");
-                        stream.WriteLine("2»ses" + package[1] + "»client»ls");
+                        stream.WriteLine(); //moet nog geïmplementeerd worden
                     }
                 }
-                if (b.StartsWith("3»"))
+                if (b.StartsWith("2»"))
                 {
                     Console.WriteLine(b);
-                    data.Add(b);
-                    stream.WriteLine("3»ses" + session + "»succes");
-                    b = reader.ReadLine();
-                }
-                if (b.StartsWith("4»") && b.EndsWith("»lastpackage"))
-                {
-                    Console.WriteLine(b);
-                    oldData.Add(b);
-                    stream.WriteLine("4»ses" + session + "»succes");
-                }
-                if (b.StartsWith("4»") && b.EndsWith("»lastpackage"))
-                {
-                    Console.WriteLine("last package received");
-                    stream.WriteLine("4»ses" + session + "»succes");
-                    stream.WriteLine();
+                    data.Add(NetCommand.Parse(b));
+                    stream.WriteLine("2»ses" + session + "»succes");
                 }
                 // chat has still to be implemented
                 b = reader.ReadLine();
             }
             Console.WriteLine("Closing session: ses" + session);
-            stream.WriteLine("6»" + session + "»logoutsucces");
+            stream.WriteLine("4»" + session + "»logoutsucces");
             stream.Flush();
             stream.Close();
             reader.Close();
