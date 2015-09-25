@@ -24,10 +24,10 @@ namespace ErgometerServer
             FileHandler.CheckDataFolder();
             IPAddress ipAddress; //= IPAddress.Parse("127.0.0.1");
 
-            bool ipIsOk = IPAddress.TryParse(GetIp(), out ipAddress);
+            bool ipIsOk = IPAddress.TryParse("127.0.0.1", out ipAddress); //GetIp()
             if (!ipIsOk) { Console.WriteLine("ip adres kan niet geparsed worden."); Environment.Exit(1); }
 
-            TcpListener listener = new System.Net.Sockets.TcpListener(ipAddress, 80);
+            TcpListener listener = new System.Net.Sockets.TcpListener(ipAddress, 8888);
             listener.Start();
 
             while (true)
@@ -67,13 +67,6 @@ namespace ErgometerServer
             string name = null;
             int session = 0;
             bool doctor = false;
-            string a = reader.ReadLine(); 
-            Console.WriteLine(a);
-            if (a.StartsWith("1»") && a.EndsWith("connect"))
-            {
-                Console.WriteLine("Connection established");
-                stream.WriteLine(a.Substring(0, a.Length - 7) + "cs");
-            }
             string b = reader.ReadLine();
             ArrayList data = new ArrayList();
             while (!b.StartsWith("4»") && !b.EndsWith("logout"))
