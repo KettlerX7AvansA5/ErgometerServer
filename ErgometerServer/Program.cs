@@ -62,8 +62,8 @@ namespace ErgometerServer
         static void HandleClientThread(object obj)
         {
             TcpClient client = obj as TcpClient;
-            StreamReader reader = new StreamReader(client.GetStream(), Encoding.ASCII);
-            StreamWriter stream = new StreamWriter(client.GetStream(), Encoding.ASCII);
+            StreamReader reader = new StreamReader(client.GetStream(), Encoding.Unicode);
+            StreamWriter stream = new StreamWriter(client.GetStream(), Encoding.Unicode);
             string name = null;
             int session = 0;
             bool doctor = false;
@@ -75,8 +75,10 @@ namespace ErgometerServer
                 {
                     session = FileHandler.GenerateSession();
                     NetCommand sescommand = new NetCommand(NetCommand.CommandType.SESSION, session);
-                    stream.WriteLine(sescommand.ToString());
                     Console.WriteLine(b);
+                    Console.WriteLine(sescommand.ToString());
+                    stream.WriteLine(sescommand.ToString());
+                    stream.Flush();
                 }
                 if(b.StartsWith("1»"))
                 {
@@ -90,8 +92,9 @@ namespace ErgometerServer
                     else
                     {
                         Console.WriteLine("login of " + name + " succesful");
-                        stream.WriteLine(); //moet nog geïmplementeerd worden
+                        stream.WriteLine("login succes"); //moet nog geïmplementeerd worden
                     }
+                    stream.Flush();
                 }
                 if (b.StartsWith("2»"))
                 {
