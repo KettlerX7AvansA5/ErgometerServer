@@ -1,50 +1,52 @@
-﻿using System;
+﻿using ErgometerLibrary;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using ErgometerLibrary;
 
 namespace ErgometerServer
 {
-    class Program
+    class Server
     {
         static void Main(string[] args)
         {
-            new Program();
+            new Server();
         }
 
-        public Program()
+        private List<ClientThread> clients;
+        private DoctorThread doctor;
+
+        public Server()
         {
             FileHandler.CheckDataFolder();
-            IPAddress ipAddress; //= IPAddress.Parse("127.0.0.1");
 
-            bool ipIsOk = IPAddress.TryParse("127.0.0.1", out ipAddress); //GetIp()
-            if (!ipIsOk) { Console.WriteLine("ip adres kan niet geparsed worden."); Environment.Exit(1); }
-
-            TcpListener listener = new System.Net.Sockets.TcpListener(ipAddress, 8888);
+            TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
             listener.Start();
 
             while (true)
             {
-                Console.WriteLine("Waiting for connection with client");
+                Console.WriteLine("Waiting for connection with client...");
 
                 //AcceptTcpClient waits for a connection from the client
                 TcpClient client = listener.AcceptTcpClient();
 
-                Console.WriteLine("Connection established");
+                Console.WriteLine("Client connected");
 
-                Thread thread = new Thread(HandleClientThread);
-                thread.Start(client);
+                //Start new client
+                var cl = new ClientThread(client, this);
+                clients.Add(cl);
+
+                //Run client on new thread
+                Thread thread = new Thread(new ThreadStart(cl.run));
+                thread.Start();
             }
         }
 
-        public static String GetIp()
+        public static string GetIp()
         {
             IPHostEntry host;
             string localIP = "?";
@@ -59,7 +61,19 @@ namespace ErgometerServer
             return localIP;
         }
 
-        static void HandleClientThread(object obj)
+        public void ChangeClientToDoctor(TcpClient client, ClientThread clth)
+        {
+            clients.Remove(clth);
+            doctor = new DoctorThread(client, this);
+            Thread thread = new Thread(new ThreadStart(doctor.run));
+            thread.Start();
+        }
+
+
+
+
+        //OLD DO NOT USE
+        static void OldThread(object obj)
         {
             TcpClient client = obj as TcpClient;
             StreamReader reader = new StreamReader(client.GetStream(), Encoding.Unicode);
