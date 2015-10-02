@@ -24,6 +24,8 @@ namespace ErgometerServer
         {
             FileHandler.CheckDataFolder();
 
+            clients = new List<ClientThread>();
+
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
             listener.Start();
 
@@ -37,7 +39,7 @@ namespace ErgometerServer
                 Console.WriteLine("Client connected");
 
                 //Start new client
-                var cl = new ClientThread(client, this);
+                ClientThread cl = new ClientThread(client, this);
                 clients.Add(cl);
 
                 //Run client on new thread
