@@ -24,6 +24,8 @@ namespace ErgometerServer
         {
             FileHandler.CheckDataFolder();
 
+            Console.WriteLine("Checking datafolder " + FileHandler.DataFolder);
+
             clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);

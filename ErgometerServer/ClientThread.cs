@@ -63,10 +63,12 @@ namespace ErgometerServer
                         {
                             name = input.DisplayName;
                             loggedin = true;
+                            FileHandler.CreateSession(session, name);
                         }
                         break;
                     case NetCommand.CommandType.DATA:
                         metingen.Add(input.Meting);
+                        FileHandler.WriteMetingen(session, metingen);
                         break;
                     case NetCommand.CommandType.CHAT:
                         chat.Add(new ChatMessage(name, input.ChatMessage));
@@ -74,6 +76,8 @@ namespace ErgometerServer
                     case NetCommand.CommandType.LOGOUT:
                         loggedin = false;
                         running = false;
+                        FileHandler.WriteMetingen(session, metingen);
+                        FileHandler.WriteChat(session, chat);
                         client.Close();
                         break;
                     default:
