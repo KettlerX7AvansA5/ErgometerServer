@@ -43,6 +43,7 @@ namespace ErgometerServer
             running = true;
 
             session = FileHandler.GenerateSession();
+            Console.WriteLine("Generated new session: " + session);
             NetHelper.SendNetCommand(client, new NetCommand(session));
 
             while (running)
@@ -52,17 +53,20 @@ namespace ErgometerServer
                 switch(input.Type)
                 {
                     case NetCommand.CommandType.SESSION:
+
                         break;
                     case NetCommand.CommandType.LOGIN:
                         if(input.IsDoctor)
                         {
                             server.ChangeClientToDoctor(client, this);
+                            Console.WriteLine("Doctor connected");
                             running = false;
                         }
                         else
                         {
                             name = input.DisplayName;
                             loggedin = true;
+                            Console.WriteLine(name + " (client) connected");
                             FileHandler.CreateSession(session, name);
                         }
                         break;
@@ -72,10 +76,12 @@ namespace ErgometerServer
                         break;
                     case NetCommand.CommandType.CHAT:
                         chat.Add(new ChatMessage(name, input.ChatMessage));
+                        Console.WriteLine(name + ": " + input.ChatMessage);
                         break;
                     case NetCommand.CommandType.LOGOUT:
                         loggedin = false;
                         running = false;
+                        Console.WriteLine(name + " logged out");
                         FileHandler.WriteMetingen(session, metingen);
                         FileHandler.WriteChat(session, chat);
                         client.Close();
