@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Net.Sockets;
 using System.Runtime.Remoting.Lifetime;
 using System.Threading;
@@ -12,7 +13,6 @@ namespace ErgometerServer
         Server server;
 
         string name;
-        ArrayList threads;
 
         bool running;
         bool loggedin;
@@ -23,7 +23,6 @@ namespace ErgometerServer
             this.client = client;
             this.server = server;
             this.name = "Unknown";
-            this.threads = new ArrayList();
             this.running = false;
             this.loggedin = false;
         }
@@ -34,19 +33,28 @@ namespace ErgometerServer
             loggedin = true;
             while (loggedin && running)
             {
-                if (threads.Count < server.clients.Count)
+                NetCommand input = NetHelper.ReadNetCommand(client);
+
+                switch (input.Type)
                 {
-                    DoctorSessionThread dt = new DoctorSessionThread(1, client, this);
-                    threads.Add(dt);
-                    Thread thread = new Thread(new ThreadStart(dt.run));
-                    thread.Start();
+                    case NetCommand.CommandType.LOGOUT:
+                        loggedin = false;
+                        Console.WriteLine("Doctor logged out");
+                        break;
+                    case NetCommand.CommandType.CHAT:
+                        server.sendToClient(input);
+                        Console.WriteLine(input);
+                        break;
+                    default:
+                        throw new FormatException("Unknown Command");
                 }
             }
+            client.Close();
         }
 
-        public void logout()
+        public void sendToDoctor(NetCommand command)
         {
-            loggedin = false;
+            NetHelper.SendNetCommand(client, command);
         }
     }
 }

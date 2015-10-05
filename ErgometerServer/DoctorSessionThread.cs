@@ -9,9 +9,10 @@ namespace ErgometerServer
 {
     class DoctorSessionThread
     {
-        private int session;
+        public int session { get; }
         private TcpClient client;
         private DoctorThread doctor;
+        private Boolean running;
 
         public DoctorSessionThread(int session, TcpClient client, DoctorThread doctor)
         {
@@ -22,7 +23,11 @@ namespace ErgometerServer
 
         public void run()
         {
-            
+            running = true;
+            while (running)
+            {
+                
+            }
         }
     }
 }

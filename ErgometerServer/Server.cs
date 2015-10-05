@@ -73,14 +73,27 @@ namespace ErgometerServer
             thread.Start();
         }
 
-        public void sendToDoctor()
+        public void sendToDoctor(NetCommand command)
         {
-            
+            if (doctor != null)
+            {
+                doctor.sendToDoctor(command);
+            }
+            else
+            {
+                Console.WriteLine("No doctor connected to the server yet");
+            }
         }
 
-        public void sendToClient(int session)
+        public void sendToClient(NetCommand command)
         {
-            
+            foreach (ClientThread clientThread in clients)
+            {
+                if (clientThread.session == command.Session)
+                {
+                    clientThread.writeToClient(command);
+                }
+            }
         }
     }
 }

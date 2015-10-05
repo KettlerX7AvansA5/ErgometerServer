@@ -16,7 +16,7 @@ namespace ErgometerServer
         Server server;
 
         string name;
-        int session;
+        public int session { get; }
 
         bool running;
         bool loggedin;
@@ -36,14 +36,14 @@ namespace ErgometerServer
 
             metingen = new List<Meting>();
             chat = new List<ChatMessage>();
+            session = FileHandler.GenerateSession();
+            Console.WriteLine("Generated new session: " + session);
         }
 
         public void run()
         {
             running = true;
 
-            session = FileHandler.GenerateSession();
-            Console.WriteLine("Generated new session: " + session);
             NetHelper.SendNetCommand(client, new NetCommand(session));
 
             while (running)
@@ -72,10 +72,12 @@ namespace ErgometerServer
                         break;
                     case NetCommand.CommandType.DATA:
                         metingen.Add(input.Meting);
+                        server.sendToDoctor(input);
                         FileHandler.WriteMetingen(session, metingen);
                         break;
                     case NetCommand.CommandType.CHAT:
                         chat.Add(new ChatMessage(name, input.ChatMessage));
+                        server.sendToDoctor(input);
                         Console.WriteLine(name + ": " + input.ChatMessage);
                         break;
                     case NetCommand.CommandType.LOGOUT:
@@ -92,5 +94,13 @@ namespace ErgometerServer
             }
         }
 
+        public void writeToClient(NetCommand command)
+        {
+            NetHelper.SendNetCommand(client, command);
+            if (command.Type == NetCommand.CommandType.CHAT)
+            {
+                chat.Add(new ChatMessage("Doctor", command.ChatMessage));
+            }
+        }
     }
 }
