@@ -17,7 +17,7 @@ namespace ErgometerServer
             new Server();
         }
 
-        private List<ClientThread> clients;
+        public List<ClientThread> clients { get; }
         private DoctorThread doctor;
 
         public Server()
@@ -71,6 +71,16 @@ namespace ErgometerServer
             doctor = new DoctorThread(client, this);
             Thread thread = new Thread(new ThreadStart(doctor.run));
             thread.Start();
+        }
+
+        public void sendToDoctor()
+        {
+            
+        }
+
+        public void sendToClient(int session)
+        {
+            
         }
     }
 }
