@@ -42,7 +42,7 @@ namespace ErgometerServer
                         Console.WriteLine("Doctor logged out");
                         break;
                     case NetCommand.CommandType.CHAT:
-                        server.sendToClient(input);
+                        server.SendToClient(input);
                         Console.WriteLine(input);
                         break;
                     default:

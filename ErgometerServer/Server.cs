@@ -19,17 +19,21 @@ namespace ErgometerServer
 
         public List<ClientThread> clients { get; }
         private DoctorThread doctor;
+        private static Dictionary<string, string> users;
 
         public Server()
         {
-            FileHandler.CheckDataFolder();
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
 
-            Console.WriteLine("Checking datafolder " + FileHandler.DataFolder);
+            FileHandler.CheckStorage();
 
+            users = FileHandler.LoadUsers();
             clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
             listener.Start();
+
+            Console.WriteLine("Server started successfully...");
 
             while (true)
             {
@@ -73,7 +77,7 @@ namespace ErgometerServer
             thread.Start();
         }
 
-        public void sendToDoctor(NetCommand command)
+        public void SendToDoctor(NetCommand command)
         {
             if (doctor != null)
             {
@@ -85,15 +89,49 @@ namespace ErgometerServer
             }
         }
 
-        public void sendToClient(NetCommand command)
+        public void BroadcastToClients(NetCommand command)
+        {
+            foreach (ClientThread clientThread in clients)
+            {
+                    clientThread.SendToClient(command);
+            }
+        }
+
+        public void SendToClient(NetCommand command)
         {
             foreach (ClientThread clientThread in clients)
             {
                 if (clientThread.session == command.Session)
                 {
-                    clientThread.writeToClient(command);
+                    clientThread.SendToClient(command);
                 }
             }
         }
+
+        private void AddUser(string name, string password)
+        {
+            users.Add(name, password);
+        }
+
+        private bool CheckPassword(string name, string password)
+        {
+            string pass;
+            bool isOk = users.TryGetValue(name, out pass);
+            if (!isOk) return false;
+
+            return pass == password;
+        }
+
+        private void ChangePassword(string name, string newpassword)
+        {
+
+        }
+
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            FileHandler.SaveUsers(users);
+            Console.WriteLine("Closing server");
+        }
     }
+
 }

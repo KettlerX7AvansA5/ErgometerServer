@@ -24,7 +24,6 @@ namespace ErgometerServer
         List<Meting> metingen;
         List<ChatMessage> chat;
 
-
         public ClientThread(TcpClient client, Server server)
         {
             this.client = client;
@@ -66,18 +65,17 @@ namespace ErgometerServer
                         {
                             name = input.DisplayName;
                             loggedin = true;
-                            Console.WriteLine(name + " (client) connected");
+                            Console.WriteLine(name + " (client) connected with password: " + input.Password);
                             FileHandler.CreateSession(session, name);
                         }
                         break;
                     case NetCommand.CommandType.DATA:
                         metingen.Add(input.Meting);
-                        server.sendToDoctor(input);
-                        FileHandler.WriteMetingen(session, metingen);
+                        server.SendToDoctor(input);
                         break;
                     case NetCommand.CommandType.CHAT:
                         chat.Add(new ChatMessage(name, input.ChatMessage));
-                        server.sendToDoctor(input);
+                        server.SendToDoctor(input);
                         Console.WriteLine(name + ": " + input.ChatMessage);
                         break;
                     case NetCommand.CommandType.LOGOUT:
@@ -94,7 +92,7 @@ namespace ErgometerServer
             }
         }
 
-        public void writeToClient(NetCommand command)
+        public void SendToClient(NetCommand command)
         {
             NetHelper.SendNetCommand(client, command);
             if (command.Type == NetCommand.CommandType.CHAT)
