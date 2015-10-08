@@ -55,28 +55,50 @@ namespace ErgometerServer
 
                         break;
                     case NetCommand.CommandType.LOGIN:
-                        if(input.IsDoctor)
+                        if(! server.CheckPassword(input.DisplayName, input.Password))
                         {
-                            server.ChangeClientToDoctor(client, this);
-                            Console.WriteLine("Doctor connected");
-                            running = false;
+                            NetHelper.SendNetCommand(client, new NetCommand(NetCommand.ResponseType.LOGINWRONG, session));
+                            loggedin = false;
                         }
                         else
                         {
-                            name = input.DisplayName;
+                            NetHelper.SendNetCommand(client, new NetCommand(NetCommand.ResponseType.LOGINOK, session));
                             loggedin = true;
-                            Console.WriteLine(name + " (client) connected with password: " + input.Password);
-                            FileHandler.CreateSession(session, name);
+
+                            if (input.IsDoctor)
+                            {
+                                server.ChangeClientToDoctor(client, this);
+                                Console.WriteLine("Doctor connected");
+                                running = false;
+                            }
+                            else
+                            {
+                                name = input.DisplayName;
+                                loggedin = true;
+                                Console.WriteLine(name + " (client) connected with password: " + input.Password);
+                                FileHandler.CreateSession(session, name);
+                            }
                         }
                         break;
                     case NetCommand.CommandType.DATA:
-                        metingen.Add(input.Meting);
-                        server.SendToDoctor(input);
+                        if (loggedin)
+                        {
+                            metingen.Add(input.Meting);
+                            server.SendToDoctor(input);
+                        }
+                        else
+                            NetHelper.SendNetCommand(client, new NetCommand(NetCommand.ResponseType.NOTLOGGEDIN, session));
+
                         break;
                     case NetCommand.CommandType.CHAT:
-                        chat.Add(new ChatMessage(name, input.ChatMessage));
-                        server.SendToDoctor(input);
-                        Console.WriteLine(name + ": " + input.ChatMessage);
+                        if (loggedin)
+                        {
+                            chat.Add(new ChatMessage(name, input.ChatMessage));
+                            server.SendToDoctor(input);
+                            Console.WriteLine(name + ": " + input.ChatMessage);
+                        }
+                        else
+                            NetHelper.SendNetCommand(client, new NetCommand(NetCommand.ResponseType.NOTLOGGEDIN, session));
                         break;
                     case NetCommand.CommandType.LOGOUT:
                         loggedin = false;

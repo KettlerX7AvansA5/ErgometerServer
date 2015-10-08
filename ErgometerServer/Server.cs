@@ -111,25 +111,39 @@ namespace ErgometerServer
         private void AddUser(string name, string password)
         {
             users.Add(name, password);
+            FileHandler.SaveUsers(users);
         }
 
-        private bool CheckPassword(string name, string password)
+        public bool CheckPassword(string name, string password)
         {
             string pass;
             bool isOk = users.TryGetValue(name, out pass);
+
+            Console.WriteLine($"Checking {name}, {password}: found {isOk} with response {pass}");
+
             if (!isOk) return false;
 
             return pass == password;
         }
 
-        private void ChangePassword(string name, string newpassword)
+        private string GeneratePassword(int len = 8)
         {
+            string pass = "";
 
+            char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+
+            Random rand = new Random();
+
+            for (int i=0; i<=len; i++)
+            {
+                pass += chars[rand.Next(0, chars.Length - 1)];
+            }
+
+            return pass;
         }
 
         private static void OnProcessExit(object sender, EventArgs e)
         {
-            FileHandler.SaveUsers(users);
             Console.WriteLine("Closing server");
         }
     }
