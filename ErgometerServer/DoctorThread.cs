@@ -43,6 +43,9 @@ namespace ErgometerServer
                     case NetCommand.CommandType.VALUESET:
                         server.SendToClient(input);
                         break;
+                    case NetCommand.CommandType.USER:
+                        server.AddUser(input.users);
+                        break;
                     default:
                         throw new FormatException("Unknown Command");
                 }

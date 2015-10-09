@@ -114,7 +114,7 @@ namespace ErgometerServer
             FileHandler.SaveUsers(users);
         }
 
-        private void AddUser(Dictionary<string, string> users)
+        public void AddUser(Dictionary<string, string> users)
         {
             foreach(KeyValuePair<string, string> user in users)
             {

@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="ErgometerLibrary, Version=1.0.2.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ErgometerLibrary\ErgometerLibrary\ErgometerLibrary\bin\Debug\ErgometerLibrary.dll</HintPath>
+      <HintPath>..\..\ErgometerLibrary\ErgometerLibrary\bin\Debug\ErgometerLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
