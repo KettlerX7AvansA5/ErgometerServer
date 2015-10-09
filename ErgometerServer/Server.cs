@@ -114,6 +114,16 @@ namespace ErgometerServer
             FileHandler.SaveUsers(users);
         }
 
+        private void AddUser(Dictionary<string, string> users)
+        {
+            foreach(KeyValuePair<string, string> user in users)
+            {
+                users.Add(user.Key, user.Value);
+            }
+            
+            FileHandler.SaveUsers(users);
+        }
+
         public bool CheckPassword(string name, string password)
         {
             string pass;
