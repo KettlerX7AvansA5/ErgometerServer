@@ -37,6 +37,7 @@ namespace ErgometerServer
                     // - Oude sessies bekijken  (lijst met sessies)
                     // - Users opvragen
                     // - Gegevens van huidige sessie krijgen (gebruikersnaam enz)
+                    // - Huidige sessies
                     // - 
                     case NetCommand.CommandType.LOGOUT:
                         running = false;
