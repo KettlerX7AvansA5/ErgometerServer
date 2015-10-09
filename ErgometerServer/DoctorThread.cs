@@ -32,6 +32,13 @@ namespace ErgometerServer
 
                 switch (input.Type)
                 {
+                    //Nog toe te voegen:
+                    // - Oude data opsturen
+                    // - Oude sessies bekijken
+                    // - Users opvragen
+                    // - Users toevoegen
+                    // - Gegevens van huidige sessie krijgen
+                    // - 
                     case NetCommand.CommandType.LOGOUT:
                         running = false;
                         client.Close();
