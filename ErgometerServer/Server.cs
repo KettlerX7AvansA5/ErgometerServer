@@ -136,6 +136,16 @@ namespace ErgometerServer
             return pass == password;
         }
 
+        public List<int> GetRunningSessions()
+        {
+            List<int> sessions = new List<int>();
+            foreach (ClientThread thread in clients)
+            {
+                sessions.Add(thread.session);
+            }
+            return sessions;
+        } 
+
         private string GeneratePassword(int len = 8)
         {
             string pass = "";

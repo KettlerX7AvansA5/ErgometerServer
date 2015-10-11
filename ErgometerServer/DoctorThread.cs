@@ -34,11 +34,11 @@ namespace ErgometerServer
                 switch (input.Type)
                 {
                     //Nog toe te voegen:
-                    // - Oude data opsturen (metingen)
-                    // - Oude sessies bekijken  (lijst met sessies)
-                    // - Users opvragen
+                    // - Oude data opsturen (metingen) (not tested yet)
+                    // - Oude sessies bekijken  (lijst met sessies) (not tested yet)
+                    // - Users opvragen (not tested yet)
                     // - Gegevens van huidige sessie krijgen (gebruikersnaam enz)
-                    // - Huidige sessies
+                    // - Huidige sessies (not tested yet)
                     // - 
                     case NetCommand.CommandType.LOGOUT:
                         running = false;
@@ -68,13 +68,21 @@ namespace ErgometerServer
                                 }
                                 break;
                             case NetCommand.RequestType.ALLSESSIONS:
-                                //Net implemented yet
+                                int[] sessions = FileHandler.GetAllSessions();
+                                for (int i = 0; i < sessions.Length; i++)
+                                {
+                                    sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, sessions[i]));
+                                }
                                 break;
                             case NetCommand.RequestType.CURRENTSESSIONS:
-                                //not implemented yet
+                                List<int> currentsessions = server.GetRunningSessions();
+                                foreach (int session in currentsessions)
+                                {
+                                    sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, session));
+                                }
                                 break;
                             case NetCommand.RequestType.SESSIONDATA:
-                                //not implemented yet
+                                //sendToDoctor(new NetCommand());
                                 break;
                             default:
                                 throw new FormatException("Unknown Command");
