@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ErgometerLibrary, Version=1.0.2.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ErgometerLibrary, Version=1.0.2.8, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\ErgometerLibrary\ErgometerLibrary\ErgometerLibrary\bin\Debug\ErgometerLibrary.dll</HintPath>
     </Reference>

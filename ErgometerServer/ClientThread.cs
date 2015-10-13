@@ -15,7 +15,7 @@ namespace ErgometerServer
         TcpClient client;
         Server server;
 
-        string name;
+        public string name;
         public int session { get; }
 
         bool running;

@@ -19,7 +19,7 @@ namespace ErgometerServer
 
         public List<ClientThread> clients { get; }
         private DoctorThread doctor;
-        private static Dictionary<string, string> users;
+        public Dictionary<string, string> users;
 
         public Server()
         {
@@ -28,6 +28,7 @@ namespace ErgometerServer
             FileHandler.CheckStorage();
 
             users = FileHandler.LoadUsers();
+
             clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
@@ -108,7 +109,7 @@ namespace ErgometerServer
             }
         }
 
-        private void AddUser(string name, string password)
+        public void AddUser(string name, string password)
         {
             users.Add(name, password);
             FileHandler.SaveUsers(users);
@@ -144,7 +145,17 @@ namespace ErgometerServer
                 sessions.Add(thread.session);
             }
             return sessions;
-        } 
+        }
+
+        public List<Tuple<int, string>> GetRunningSessionsData()
+        {
+            List<Tuple<int, string>> sessions = new List<Tuple<int, string>>();
+            foreach (ClientThread thread in clients)
+            {
+                sessions.Add(new Tuple<int, string>(thread.session, thread.name));
+            }
+            return sessions;
+        }
 
         private string GeneratePassword(int len = 8)
         {

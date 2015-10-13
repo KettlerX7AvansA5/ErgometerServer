@@ -37,7 +37,7 @@ namespace ErgometerServer
                     // - Oude data opsturen (metingen) (not tested yet)
                     // - Oude sessies bekijken  (lijst met sessies) (not tested yet)
                     // - Users opvragen (not tested yet)
-                    // - Gegevens van huidige sessie krijgen (gebruikersnaam enz)
+                    // - Gegevens van huidige sessie krijgen (gebruikersnaam enz) (not tested yet)
                     // - Huidige sessies (not tested yet)
                     // - 
                     case NetCommand.CommandType.LOGOUT:
@@ -52,16 +52,21 @@ namespace ErgometerServer
                         server.SendToClient(input);
                         break;
                     case NetCommand.CommandType.USER:
-                        server.AddUser(input.users);
+                        server.AddUser(input.DisplayName, input.Password);
                         break;
                     case NetCommand.CommandType.REQUEST:
                         switch (input.Request)
                         {
                             case NetCommand.RequestType.USERS:
-                                sendToDoctor(new NetCommand(FileHandler.LoadUsers(), input.Session));
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.USERS, server.users.Count, input.Session));
+                                foreach (KeyValuePair<string, string> user in server.users)
+                                {
+                                    sendToDoctor(new NetCommand(user.Key, user.Value, input.Session));
+                                }
                                 break;
                             case NetCommand.RequestType.OLDDATA:
                                 List<Meting> metingen = FileHandler.ReadMetingen(input.Session);
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.DATA, metingen.Count, input.Session));
                                 foreach (Meting meting in metingen)
                                 {
                                     sendToDoctor(new NetCommand(meting, input.Session));
@@ -69,6 +74,7 @@ namespace ErgometerServer
                                 break;
                             case NetCommand.RequestType.ALLSESSIONS:
                                 int[] sessions = FileHandler.GetAllSessions();
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONS, sessions.Length, input.Session));
                                 for (int i = 0; i < sessions.Length; i++)
                                 {
                                     sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, sessions[i]));
@@ -76,13 +82,19 @@ namespace ErgometerServer
                                 break;
                             case NetCommand.RequestType.CURRENTSESSIONS:
                                 List<int> currentsessions = server.GetRunningSessions();
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.CURRENTSESSIONS, currentsessions.Count, input.Session));
                                 foreach (int session in currentsessions)
                                 {
                                     sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, session));
                                 }
                                 break;
                             case NetCommand.RequestType.SESSIONDATA:
-                                //sendToDoctor(new NetCommand());
+                                List<Tuple<int, string>> currentsessionsdata = server.GetRunningSessionsData();
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONDATA, currentsessionsdata.Count, input.Session));
+                                foreach (Tuple<int, string> ses in currentsessionsdata)
+                                {
+                                    sendToDoctor(new NetCommand(ses.Item2, false, ses.Item1));
+                                }
                                 break;
                             default:
                                 throw new FormatException("Unknown Command");
