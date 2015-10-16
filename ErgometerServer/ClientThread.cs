@@ -95,6 +95,7 @@ namespace ErgometerServer
                         {
                             chat.Add(new ChatMessage(name, input.ChatMessage));
                             server.SendToDoctor(input);
+                            NetHelper.SendNetCommand(client, new NetCommand("shut up", session));
                             Console.WriteLine(name + ": " + input.ChatMessage);
                         }
                         else
