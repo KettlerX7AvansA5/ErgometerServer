@@ -112,6 +112,8 @@ namespace ErgometerServer
                         throw new FormatException("Unknown command");
                 }
             }
+
+            server.RemoveActiveSession(this);
         }
 
         public void SendToClient(NetCommand command)

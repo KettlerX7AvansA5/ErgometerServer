@@ -28,7 +28,6 @@ namespace ErgometerServer
             FileHandler.CheckStorage();
 
             users = FileHandler.LoadUsers();
-
             clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
@@ -155,6 +154,11 @@ namespace ErgometerServer
                 sessions.Add(new Tuple<int, string>(thread.session, thread.name));
             }
             return sessions;
+        }
+
+        internal void RemoveActiveSession(ClientThread clientThread)
+        {
+            clients.Remove(clientThread);
         }
 
         private string GeneratePassword(int len = 8)
