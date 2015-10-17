@@ -93,7 +93,7 @@ namespace ErgometerServer
                     case NetCommand.CommandType.CHAT:
                         if (loggedin)
                         {
-                            chat.Add(new ChatMessage(name, input.ChatMessage));
+                            chat.Add(new ChatMessage(name, input.ChatMessage, false));
                             server.SendToDoctor(input);
                             NetHelper.SendNetCommand(client, new NetCommand("shut up", session));
                             Console.WriteLine(name + ": " + input.ChatMessage);
@@ -122,7 +122,7 @@ namespace ErgometerServer
             NetHelper.SendNetCommand(client, command);
             if (command.Type == NetCommand.CommandType.CHAT)
             {
-                chat.Add(new ChatMessage("Doctor", command.ChatMessage));
+                chat.Add(new ChatMessage("Doctor", command.ChatMessage, true));
             }
         }
     }
