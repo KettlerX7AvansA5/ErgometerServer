@@ -75,7 +75,6 @@ namespace ErgometerServer
                             {
                                 name = input.DisplayName;
                                 loggedin = true;
-                                Console.WriteLine(name + " (client) connected with password: " + input.Password);
                                 FileHandler.CreateSession(session, name);
                             }
                         }
@@ -95,7 +94,6 @@ namespace ErgometerServer
                         {
                             chat.Add(new ChatMessage(name, input.ChatMessage, false));
                             server.SendToDoctor(input);
-                            Console.WriteLine(name + ": " + input.ChatMessage);
                         }
                         else
                             NetHelper.SendNetCommand(client, new NetCommand(NetCommand.ResponseType.NOTLOGGEDIN, session));
@@ -108,8 +106,17 @@ namespace ErgometerServer
                         FileHandler.WriteChat(session, chat);
                         client.Close();
                         break;
+                    case NetCommand.CommandType.ERROR:
+                        Console.WriteLine("An error occured, assuming client disconnected");
+                        loggedin = false;
+                        running = false;
+                        Console.WriteLine(name + " logged out due to an error");
+                        FileHandler.WriteMetingen(session, metingen);
+                        FileHandler.WriteChat(session, chat);
+                        client.Close();
+                        break;
                     default:
-                        throw new FormatException("Unknown command");
+                       throw new FormatException("Unknown command");
                 }
             }
 

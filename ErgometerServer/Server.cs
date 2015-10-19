@@ -85,10 +85,6 @@ namespace ErgometerServer
             {
                 doctor.sendToDoctor(command);
             }
-            else
-            {
-                Console.WriteLine("No doctor connected to the server yet");
-            }
         }
 
         public void BroadcastToClients(NetCommand command)
@@ -130,8 +126,6 @@ namespace ErgometerServer
         {
             string pass;
             bool isOk = users.TryGetValue(name, out pass);
-
-            Console.WriteLine($"Checking {name}, {password}: found {isOk} with response {pass}");
 
             if (!isOk) return false;
 

@@ -101,6 +101,12 @@ namespace ErgometerServer
                         }
                         
                         break;
+                    case NetCommand.CommandType.ERROR:
+                        Console.WriteLine("An error occured, assuming docter disconnected");
+                        running = false;
+                        Console.WriteLine("Doctor logged out due to an error");
+                        client.Close();
+                        break;
                     default:
                         throw new FormatException("Unknown Command");
                 }
