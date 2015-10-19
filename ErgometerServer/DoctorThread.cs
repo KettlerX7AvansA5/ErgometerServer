@@ -70,6 +70,7 @@ namespace ErgometerServer
                                 foreach (Meting meting in metingen)
                                 {
                                     sendToDoctor(new NetCommand(meting, input.Session));
+                                    Console.WriteLine(new NetCommand(meting, input.Session));
                                 }
                                 break;
                             case NetCommand.RequestType.ALLSESSIONS:
@@ -78,14 +79,6 @@ namespace ErgometerServer
                                 for (int i = 0; i < sessions.Length; i++)
                                 {
                                     sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, sessions[i]));
-                                }
-                                break;
-                            case NetCommand.RequestType.CURRENTSESSIONS:
-                                List<int> currentsessions = server.GetRunningSessions();
-                                sendToDoctor(new NetCommand(NetCommand.LengthType.CURRENTSESSIONS, currentsessions.Count, input.Session));
-                                foreach (int session in currentsessions)
-                                {
-                                    sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, session));
                                 }
                                 break;
                             case NetCommand.RequestType.SESSIONDATA:

@@ -61,13 +61,13 @@ namespace ErgometerServer
 
         public static void WriteMetingen(int session, List<Meting> metingen)
         {
-            if (metingen.Count <= 15 && Directory.Exists(GetSessionFolder(session)))
+            if (metingen.Count <= 5 && Directory.Exists(GetSessionFolder(session)))
             {
                 Directory.Delete(GetSessionFolder(session), true);
             }
             else
             {
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(metingen);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(metingen.ToArray());
                 File.WriteAllText(GetSessionMetingen(session), json);
                 Console.WriteLine("Writing metingen: " + GetSessionMetingen(session));
             }
@@ -75,9 +75,11 @@ namespace ErgometerServer
 
         public static List<Meting> ReadMetingen(int session)
         {
-            object metingString = Newtonsoft.Json.JsonConvert.DeserializeObject(GetSessionMetingen(session));
+            string json = File.ReadAllText(GetSessionMetingen(session));
+
+            List<Meting> metingen = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Meting>>(json);
             Console.WriteLine("Reading metingen: " + GetSessionMetingen(session));
-            return (List<Meting>)metingString;
+            return metingen;
         }
 
         public static int[] GetAllSessions()
@@ -93,21 +95,14 @@ namespace ErgometerServer
 
         public static void WriteChat(int session, List<ChatMessage> chat)
         {
-            if (chat.Count <= 15 && Directory.Exists(GetSessionFolder(session)))
+            string write = "";
+            foreach (ChatMessage c in chat)
             {
-                Directory.Delete(GetSessionFolder(session), true);
+                write += c.ToString() + "\n";
             }
-            else
-            {
-                string write = "";
-                foreach (ChatMessage c in chat)
-                {
-                    write += c.ToString() + "\n";
-                }
 
-                File.WriteAllText(GetSessionChat(session), write);
-                Console.WriteLine("Writing chat: " + GetSessionChat(session));
-            }
+            File.WriteAllText(GetSessionChat(session), write);
+            Console.WriteLine("Writing chat: " + GetSessionChat(session));
         }
 
         private static string GetSessionFolder(int session)
