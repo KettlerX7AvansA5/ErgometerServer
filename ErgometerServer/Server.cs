@@ -50,6 +50,7 @@ namespace ErgometerServer
 
                 //Run client on new thread
                 Thread thread = new Thread(new ThreadStart(cl.run));
+                thread.IsBackground = true;
                 thread.Start();
             }
         }
@@ -74,6 +75,7 @@ namespace ErgometerServer
             clients.Remove(clth);
             doctor = new DoctorThread(client, this);
             Thread thread = new Thread(new ThreadStart(doctor.run));
+            thread.IsBackground = true;
             thread.Start();
         }
 
