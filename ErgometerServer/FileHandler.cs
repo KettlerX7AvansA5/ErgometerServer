@@ -88,11 +88,12 @@ namespace ErgometerServer
             List<Tuple<int,string,double>> sessiondata = new List<Tuple<int, string, double>>();
             for (int i = 0; i < directories.Length; i++)
             {
-                string props = File.ReadAllText(GetSessionFile(int.Parse(directories[i])));
+                string directoryname = Path.GetFileName(directories[i]);
+                string props = File.ReadAllText(GetSessionFile(int.Parse(directoryname)));
                 string[] properties = props.Split('\n');
                 string name = properties[0];
                 double date = double.Parse(properties[1]);
-                sessiondata.Add(new Tuple<int, string, double>(int.Parse(directories[i]), name, date));
+                sessiondata.Add(new Tuple<int, string, double>(int.Parse(directoryname), name, date));
             }
             return sessiondata;
         }
