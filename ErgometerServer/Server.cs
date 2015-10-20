@@ -55,22 +55,6 @@ namespace ErgometerServer
             }
         }
 
-        public static string GetIp()
-        {
-            IPHostEntry host;
-            string localIP = "?";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localIP = ip.ToString();
-                }
-            }
-            Console.WriteLine(localIP);
-            return localIP;
-        }
-
         public void ChangeClientToDoctor(TcpClient client, ClientThread clth)
         {
             clients.Remove(clth);
