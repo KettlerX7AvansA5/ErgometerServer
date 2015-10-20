@@ -61,7 +61,7 @@ namespace ErgometerServer
 
         public static void WriteMetingen(int session, List<Meting> metingen)
         {
-            if (metingen.Count <= 5 && Directory.Exists(GetSessionFolder(session)))
+            if (metingen.Count <= 20 && Directory.Exists(GetSessionFolder(session)))
             {
                 Directory.Delete(GetSessionFolder(session), true);
             }
