@@ -116,7 +116,9 @@ namespace ErgometerServer
                         client.Close();
                         break;
                     default:
-                       throw new FormatException("Unknown command");
+                        if(loggedin)
+                            throw new FormatException("Unknown command");
+                        break;
                 }
             }
 

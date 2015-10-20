@@ -31,6 +31,7 @@ namespace ErgometerServer
             clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
+            //TcpListener listener = new TcpListener(NetHelper.GetIP(GetIp()), 8888);
             listener.Start();
 
             Console.WriteLine("Server started successfully...");
@@ -67,6 +68,7 @@ namespace ErgometerServer
                     localIP = ip.ToString();
                 }
             }
+            Console.WriteLine(localIP);
             return localIP;
         }
 

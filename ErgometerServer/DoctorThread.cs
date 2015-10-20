@@ -15,7 +15,6 @@ namespace ErgometerServer
 
         bool running;
 
-
         public DoctorThread(TcpClient client, Server server)
         {
             this.client = client;
@@ -33,13 +32,6 @@ namespace ErgometerServer
 
                 switch (input.Type)
                 {
-                    //Nog toe te voegen:
-                    // - Oude data opsturen (metingen) (not tested yet)
-                    // - Oude sessies bekijken  (lijst met sessies) (not tested yet)
-                    // - Users opvragen (not tested yet)
-                    // - Gegevens van huidige sessie krijgen (gebruikersnaam enz) (not tested yet)
-                    // - Huidige sessies (not tested yet)
-                    // - 
                     case NetCommand.CommandType.LOGOUT:
                         running = false;
                         client.Close();
@@ -61,14 +53,15 @@ namespace ErgometerServer
                                 sendToDoctor(new NetCommand(NetCommand.LengthType.USERS, server.users.Count, input.Session));
                                 foreach (KeyValuePair<string, string> user in server.users)
                                 {
+                                    Thread.Sleep(10);
                                     sendToDoctor(new NetCommand(user.Key, user.Value, input.Session));
                                 }
                                 break;
                             case NetCommand.RequestType.OLDDATA:
                                 List<Meting> metingen = FileHandler.ReadMetingen(input.Session);
-                                sendToDoctor(new NetCommand(NetCommand.LengthType.DATA, metingen.Count, input.Session));
                                 foreach (Meting meting in metingen)
                                 {
+                                    Thread.Sleep(10);
                                     sendToDoctor(new NetCommand(meting, input.Session));
                                     Console.WriteLine(new NetCommand(meting, input.Session));
                                 }
@@ -78,6 +71,7 @@ namespace ErgometerServer
                                 sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONS, sessions.Length, input.Session));
                                 for (int i = 0; i < sessions.Length; i++)
                                 {
+                                    Thread.Sleep(10);
                                     sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, sessions[i]));
                                 }
                                 break;
@@ -86,6 +80,7 @@ namespace ErgometerServer
                                 sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONDATA, currentsessionsdata.Count, input.Session));
                                 foreach (Tuple<int, string> ses in currentsessionsdata)
                                 {
+                                    Thread.Sleep(10);
                                     sendToDoctor(new NetCommand(ses.Item2, false, ses.Item1));
                                 }
                                 break;

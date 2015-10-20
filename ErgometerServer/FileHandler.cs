@@ -95,14 +95,17 @@ namespace ErgometerServer
 
         public static void WriteChat(int session, List<ChatMessage> chat)
         {
-            string write = "";
-            foreach (ChatMessage c in chat)
+            if (Directory.Exists(GetSessionFolder(session)))
             {
-                write += c.ToString() + "\n";
-            }
+                string write = "";
+                foreach (ChatMessage c in chat)
+                {
+                    write += c.ToString() + "\n";
+                }
 
-            File.WriteAllText(GetSessionChat(session), write);
-            Console.WriteLine("Writing chat: " + GetSessionChat(session));
+                File.WriteAllText(GetSessionChat(session), write);
+                Console.WriteLine("Writing chat: " + GetSessionChat(session));
+            }
         }
 
         private static string GetSessionFolder(int session)
