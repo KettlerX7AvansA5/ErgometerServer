@@ -57,13 +57,20 @@ namespace ErgometerServer
                                     sendToDoctor(new NetCommand(user.Key, user.Value, input.Session));
                                 }
                                 break;
+                            case NetCommand.RequestType.CHAT:
+                                List<ChatMessage> chat = FileHandler.ReadChat(input.Session);
+                                foreach (ChatMessage msg in chat)
+                                {
+                                    Thread.Sleep(10);
+                                    sendToDoctor(new NetCommand(msg.Message, msg.IsDoctor, input.Session));
+                                }
+                                break;
                             case NetCommand.RequestType.OLDDATA:
                                 List<Meting> metingen = FileHandler.ReadMetingen(input.Session);
                                 foreach (Meting meting in metingen)
                                 {
                                     Thread.Sleep(10);
-                                    sendToDoctor(new NetCommand(meting, input.Session));
-                                    Console.WriteLine(new NetCommand(meting, input.Session));
+                                    sendToDoctor(new NetCommand(meting, input.Session));      
                                 }
                                 break;
                             case NetCommand.RequestType.ALLSESSIONS:
