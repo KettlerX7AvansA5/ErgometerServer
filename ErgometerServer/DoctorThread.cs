@@ -53,11 +53,12 @@ namespace ErgometerServer
                         switch (input.Request)
                         {
                             case NetCommand.RequestType.USERS:
-                                sendToDoctor(new NetCommand(NetCommand.LengthType.USERS, server.users.Count, input.Session));
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.USERS, server.users.Count-1, input.Session));
                                 foreach (KeyValuePair<string, string> user in server.users)
                                 {
                                     Thread.Sleep(10);
-                                    sendToDoctor(new NetCommand(user.Key, user.Value, input.Session));
+                                    if(user.Key != "Doctor0tVfW")
+                                        sendToDoctor(new NetCommand(user.Key, user.Value, input.Session));
                                 }
                                 break;
                             case NetCommand.RequestType.CHAT:
