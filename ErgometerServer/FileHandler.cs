@@ -82,15 +82,19 @@ namespace ErgometerServer
             return metingen;
         }
 
-        public static int[] GetAllSessions()
+        public static List<Tuple<int, string, double>> GetAllSessions()
         {
             string[] directories = Directory.GetDirectories(DataFolder);
-            int[] sessions = new int[directories.Length];
+            List<Tuple<int,string,double>> sessiondata = new List<Tuple<int, string, double>>();
             for (int i = 0; i < directories.Length; i++)
             {
-                sessions[i] = int.Parse(directories[i]);
+                string props = File.ReadAllText(GetSessionFile(int.Parse(directories[i])));
+                string[] properties = props.Split('\n');
+                string name = properties[0];
+                double date = double.Parse(properties[1]);
+                sessiondata.Add(new Tuple<int, string, double>(int.Parse(directories[i]), name, date));
             }
-            return sessions;
+            return sessiondata;
         }
 
         public static void WriteChat(int session, List<ChatMessage> chat)

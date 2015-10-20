@@ -74,11 +74,11 @@ namespace ErgometerServer
                                 }
                                 break;
                             case NetCommand.RequestType.ALLSESSIONS:
-                                int[] sessions = FileHandler.GetAllSessions();
-                                sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONS, sessions.Length, input.Session));
-                                for (int i = 0; i < sessions.Length; i++)
+                                List<Tuple<int, string, double>> sessions = FileHandler.GetAllSessions();
+                                sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONS, sessions.Count, input.Session));
+                                foreach(Tuple<int,string,double> session in sessions)
                                 {
-                                    sendToDoctor(new NetCommand(NetCommand.CommandType.SESSION, sessions[i]));
+                                    sendToDoctor(new NetCommand(session.Item2, session.Item3, session.Item1));
                                 }
                                 break;
                             case NetCommand.RequestType.SESSIONDATA:
@@ -86,7 +86,7 @@ namespace ErgometerServer
                                 sendToDoctor(new NetCommand(NetCommand.LengthType.SESSIONDATA, currentsessionsdata.Count, input.Session));
                                 foreach (Tuple<int, string> ses in currentsessionsdata)
                                 {
-                                    sendToDoctor(new NetCommand(ses.Item2, false, ses.Item1));
+                                    sendToDoctor(new NetCommand(ses.Item2, Helper.Now, ses.Item1));
                                 }
                                 break;
                             default:
