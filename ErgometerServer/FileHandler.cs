@@ -71,6 +71,7 @@ namespace ErgometerServer
                 File.WriteAllText(GetSessionMetingen(session), json);
                 Console.WriteLine("Writing metingen: " + GetSessionMetingen(session));
             }
+            File.WriteAllText(GetSessionFile(session), File.ReadAllText(GetSessionFile(session)) + Environment.NewLine + Helper.Now);
         }
 
         public static List<Meting> ReadMetingen(int session)
@@ -101,6 +102,7 @@ namespace ErgometerServer
         {
             if (Directory.Exists(GetSessionFolder(session)))
             {
+                /*
                 string write = "";
                 foreach (ChatMessage c in chat)
                 {
@@ -109,7 +111,19 @@ namespace ErgometerServer
 
                 File.WriteAllText(GetSessionChat(session), write);
                 Console.WriteLine("Writing chat: " + GetSessionChat(session));
+                */
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(chat.ToArray());
+                File.WriteAllText(GetSessionChat(session), json);
+                Console.WriteLine("Writing chat: " + GetSessionChat(session));
             }
+        }
+
+        public static List<ChatMessage> ReadChat(int session)
+        {
+            string json = File.ReadAllText(GetSessionChat(session));
+
+            List<ChatMessage> chat = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ChatMessage>>(json);
+            return chat;
         }
 
         private static string GetSessionFolder(int session)
@@ -126,7 +140,7 @@ namespace ErgometerServer
         }
         private static string GetSessionChat(int session)
         {
-            return Path.Combine(DataFolder, session.ToString(), "chat.log");
+            return Path.Combine(DataFolder, session.ToString(), "chat.ergo");
         }
 
         //USER MANAGEMENT
