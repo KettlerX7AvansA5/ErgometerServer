@@ -40,6 +40,9 @@ namespace ErgometerServer
                     case NetCommand.CommandType.CHAT:
                         server.SendToClient(input);
                         break;
+                    case NetCommand.CommandType.BROADCAST:
+                        server.BroadcastToClients(input.ChatMessage);
+                        break;
                     case NetCommand.CommandType.VALUESET:
                         server.SendToClient(input);
                         break;

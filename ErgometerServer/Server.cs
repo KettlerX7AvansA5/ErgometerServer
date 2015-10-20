@@ -88,11 +88,11 @@ namespace ErgometerServer
             }
         }
 
-        public void BroadcastToClients(NetCommand command)
+        public void BroadcastToClients(string message)
         {
             foreach (ClientThread clientThread in clients)
             {
-                    clientThread.SendToClient(command);
+                    clientThread.SendToClient(new NetCommand(message, true, clientThread.session));
             }
         }
 
