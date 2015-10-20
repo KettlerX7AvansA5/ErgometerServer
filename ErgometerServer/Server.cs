@@ -17,7 +17,7 @@ namespace ErgometerServer
             new Server();
         }
 
-        public List<ClientThread> clients { get; }
+        public static List<ClientThread> clients = new List<ClientThread>();
         private DoctorThread doctor;
         public Dictionary<string, string> users;
 
@@ -28,7 +28,6 @@ namespace ErgometerServer
             FileHandler.CheckStorage();
 
             users = FileHandler.LoadUsers();
-            clients = new List<ClientThread>();
 
             TcpListener listener = new TcpListener(NetHelper.GetIP("127.0.0.1"), 8888);
             //TcpListener listener = new TcpListener(NetHelper.GetIP(GetIp()), 8888);

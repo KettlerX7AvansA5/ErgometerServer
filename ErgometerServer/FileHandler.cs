@@ -87,15 +87,36 @@ namespace ErgometerServer
         {
             string[] directories = Directory.GetDirectories(DataFolder);
             List<Tuple<int,string,double>> sessiondata = new List<Tuple<int, string, double>>();
+
             for (int i = 0; i < directories.Length; i++)
             {
                 string directoryname = Path.GetFileName(directories[i]);
+
                 string props = File.ReadAllText(GetSessionFile(int.Parse(directoryname)));
-                string[] properties = props.Split('\n');
+
+                string[] stringSeparators = new string[] { "\r\n" };
+                string[] properties = props.Split(stringSeparators, StringSplitOptions.None);
+
+                int session = int.Parse(directoryname);
+
+                bool active = false;
+
+                foreach(ClientThread t in Server.clients)
+                {
+                    if (t.session == session)
+                        active = true;
+                }
+
                 string name = properties[0];
                 double date = double.Parse(properties[1]);
-                sessiondata.Add(new Tuple<int, string, double>(int.Parse(directoryname), name, date));
+
+                if (!active)
+                {
+                    Tuple<int, string, double> tup = new Tuple<int, string, double>(session, name, date);
+                    sessiondata.Add(tup);
+                }
             }
+
             return sessiondata;
         }
 
