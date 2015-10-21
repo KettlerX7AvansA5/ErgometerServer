@@ -25,7 +25,7 @@ namespace ErgometerServer
                     BinaryWriter writer = new BinaryWriter(stream);
                     writer.Write(1);
                     writer.Write("Doctor0tVfW");
-                    writer.Write("password");
+                    writer.Write(Helper.Base64Encode("password"));
                 }
             }
         }
@@ -70,8 +70,9 @@ namespace ErgometerServer
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(metingen.ToArray());
                 File.WriteAllText(GetSessionMetingen(session), json);
                 Console.WriteLine("Writing metingen: " + GetSessionMetingen(session));
+                File.WriteAllText(GetSessionFile(session), File.ReadAllText(GetSessionFile(session)) + Environment.NewLine + Helper.Now);
             }
-            File.WriteAllText(GetSessionFile(session), File.ReadAllText(GetSessionFile(session)) + Environment.NewLine + Helper.Now);
+            
         }
 
         public static List<Meting> ReadMetingen(int session)
@@ -177,7 +178,7 @@ namespace ErgometerServer
                 for (int n = 0; n < count; n++)
                 {
                     var key = reader.ReadString();
-                    var value = reader.ReadString();
+                    var value = Helper.Base64Decode(reader.ReadString());
                     users.Add(key, value);
                 }
             }
@@ -194,7 +195,7 @@ namespace ErgometerServer
                 foreach (var kvp in users)
                 {
                     writer.Write(kvp.Key);
-                    writer.Write(kvp.Value);
+                    writer.Write(Helper.Base64Encode(kvp.Value));
                 }
                 writer.Flush();
             }
